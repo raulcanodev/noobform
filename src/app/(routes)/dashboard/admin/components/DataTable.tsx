@@ -42,6 +42,7 @@ const defaultColumns = {
   billingStart: { title: 'Billing Start', default: false, type: 'date' as const },
   billingEnd: { title: 'Billing End', default: false, type: 'date' as const },
   planCanceled: { title: 'Plan Canceled', default: false, type: 'boolean' as const },
+  provider: { title: 'Provider', default: false, type: 'string' as const },
 };
 
 type ColumnId = keyof typeof defaultColumns;
@@ -190,7 +191,7 @@ export function UserTable({ initialUsers, totalUsers }: UserTableProps) {
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm">
               <SlidersHorizontal className="mr-2 h-4 w-4" />
-              Toggle columns
+              View
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-[200px]">

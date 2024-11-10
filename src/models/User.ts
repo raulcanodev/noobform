@@ -9,16 +9,7 @@ const UserSchema = new Schema<IUser>(
       unique: true,
       trim: true,
       lowercase: true,
-      match: [
-        /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
-        'Please enter a valid email address',
-      ],
-    },
-    password: {
-      type: String,
-      required: [true, 'Password is required'],
-      minlength: [8, 'Password must be at least 8 characters long'],
-      select: false, // This ensures the password isn't returned in queries by default
+      match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email address'],
     },
     name: {
       type: String,
@@ -28,43 +19,46 @@ const UserSchema = new Schema<IUser>(
     },
     avatar: {
       type: String,
-      default: 'default-avatar.png', // You can set a default avatar image
+      default: 'default-avatar.png',
     },
     role: {
       type: String,
       enum: ['user', 'admin'],
       default: 'user',
     },
-    premium: {
+    banned: {
       type: Boolean,
       default: false,
     },
-    emailVerified: {
-      type: Date,
+    provider: {
+      type: String,
+      enum: ['email', 'google', 'github'],
+      required: true,
+    },
+    subscriptionPlan: {
+      type: String,
+      default: 'free',
+    },
+    customerId: String,
+    subscriptionId: String,
+    billingInterval: String,
+    status: String,
+    billingStart: Date,
+    billingEnd: Date,
+    planCanceled: {
+      type: Boolean,
+      default: false,
     },
     lastLogin: {
       type: Date,
     },
+    bio: {
+      type: String,
+      trim: true,
+      maxlength: [250, 'Description cannot be more than 500 characters'],
+    }
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
-
-// Add any pre-save hooks, methods, or statics here
-UserSchema.pre('save', function(next) {
-  // You can add logic here, for example, to hash the password before saving
-  // if (this.isModified('password')) {
-  //   this.password = hashPassword(this.password);
-  // }
-  next();
-});
-
-// Removing the password field when returning user objects for security
-UserSchema.methods.toJSON = function() {
-  const userObject = this.toObject();
-  delete userObject.password;
-  return userObject;
-};
 
 export const User = models.User || model<IUser>('User', UserSchema);

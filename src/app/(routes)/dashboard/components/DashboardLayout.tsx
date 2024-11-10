@@ -2,19 +2,28 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { FileText, Settings, LogOut, Menu } from "lucide-react"
-import { Sheet, SheetContent, SheetTrigger, Separator, Button } from "@/components/ui"
+import { usePathname } from "next/navigation"
+import { FileText, Settings, LogOut, Menu, ChevronDown } from "lucide-react"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Button } from "@/components/ui/button"
+import { Separator } from "@/components/ui/separator"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import config from "@/config"
 
-
 const menuItems = [
-  { name: "Page 1", icon: FileText, href: "/dashboard/page1" },
+  { name: "Demo 1", icon: FileText, href: "/dashboard/demo1" },
   { name: "Admin", icon: FileText, href: "/dashboard/admin" },
-  { name: "Settings", icon: Settings, href: "/dashboard/settings" },
+]
+
+const settingsItems = [
+  { name: "Profile", href: "/dashboard/settings/profile" },
+  { name: "General", href: "/dashboard/settings/general" },
 ]
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+  const pathname = usePathname()
 
   const Sidebar = () => (
     <div className="flex h-full flex-col gap-4">
@@ -24,13 +33,41 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       <div className="flex-1 overflow-auto">
         <nav className="grid gap-2 px-2">
           {menuItems.map((item) => (
-            <Button key={item.name} variant="ghost" className="w-full justify-start" asChild>
+            <Button
+              key={item.name}
+              variant={pathname === item.href ? "secondary" : "ghost"}
+              className="w-full justify-start"
+              asChild
+            >
               <Link href={item.href}>
                 <item.icon className="mr-2 h-4 w-4" />
                 {item.name}
               </Link>
             </Button>
           ))}
+          <Collapsible open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
+            <CollapsibleTrigger asChild>
+              <Button variant="ghost" className="w-full justify-between">
+                <div className="flex items-center">
+                  <Settings className="mr-2 h-4 w-4" />
+                  Settings
+                </div>
+                <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${isSettingsOpen ? 'rotate-180' : ''}`} />
+              </Button>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="px-4 py-2">
+              {settingsItems.map((item) => (
+                <Button
+                  key={item.name}
+                  variant={pathname === item.href ? "secondary" : "ghost"}
+                  className="w-full justify-start"
+                  asChild
+                >
+                  <Link href={item.href}>{item.name}</Link>
+                </Button>
+              ))}
+            </CollapsibleContent>
+          </Collapsible>
         </nav>
       </div>
       <Separator />
@@ -48,7 +85,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-screen">
       {/* Desktop Sidebar */}
-      <aside className="hidden w-44 border-r bg-background lg:block">
+      <aside className="hidden w-40 border-r bg-background lg:block">
         <Sidebar />
       </aside>
 
@@ -57,16 +94,15 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         <header className="flex h-16 items-center gap-4 border-b bg-background px-4 lg:hidden">
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" aria-label="Open menu">
                 <Menu className="h-6 w-6" />
-                <span className="sr-only">Toggle menu</span>
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-64 p-0">
               <Sidebar />
             </SheetContent>
           </Sheet>
-          <div className="font-bold">noobform</div>
+          <div className="font-bold">{config.appName}</div>
         </header>
 
         {/* Main Content */}

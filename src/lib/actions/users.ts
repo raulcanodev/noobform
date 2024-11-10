@@ -3,6 +3,7 @@
 import { mongooseConnection } from "@/lib/db/mongoclient"
 import { revalidatePath } from "next/cache"
 import { User } from "@/models/User"
+import { IUser } from "@/types/user"
 
 // Ensure mongoose connection is established
 mongooseConnection.then(() => console.log('Mongoose connected')).catch(err => console.error('Mongoose connection error:', err))
@@ -37,6 +38,8 @@ export async function getUsers(page: number, pageSize: number, searchTerm: strin
     billingStart: user.billingStart || 'N/A',
     billingEnd: user.billingEnd || 'N/A',
     planCanceled: user.planCanceled || false,
+    provider: user.provider || 'N/A',
+    lastLogin: user.lastLogin || 'N/A',
   }))
 }
 
@@ -66,17 +69,21 @@ export async function deleteUser(userId: string) {
   return { success: true }
 }
 
-export async function createUser(userData: Partial<IUser>): Promise<IUser> {
-  const newUser = new User(userData)
-  await newUser.save()
-  return newUser
-}
+export async function updateUser(userId: string, updateData: Partial<IUser>): Promise<IUser | null> {
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    )
 
-export async function updateUser(userId: string, updateData: Partial<User>): Promise<User | null> {
-  const updatedUser = await User.findByIdAndUpdate(
-    userId,
-    { $set: updateData },
-    { new: true, runValidators: true }
-  )
-  return updatedUser
+    if (updatedUser) {
+      revalidatePath('/profile')
+    }
+
+    return updatedUser
+  } catch (error) {
+    console.error('Error updating user:', error)
+    throw error
+  }
 }

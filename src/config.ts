@@ -33,7 +33,7 @@ const config = {
   email: {
     // https://resend.com/
     // @/email-template/emails/signin-email.tsx
-    noreply: 'Next Init <noreply@yourdomain.com>', // Change @yourdomain.com with your domain
+    noreply: 'Next Init <noreply@cvpage.to>', // Change @yourdomain.com with your domain
     signin: {
       subject: `Login Link to your Next Init Account.`,
       content: 'Please click the magic button below to sign in to your account.',
@@ -41,11 +41,6 @@ const config = {
       logo: 'icon.png',
     }
   },
-  admin: {
-    page: {
-      usersPerPage: 100,
-    }
-  }
 };
 
 export default config;
