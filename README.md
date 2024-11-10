@@ -7,9 +7,4 @@ for (let i = 1; i <= 30; i++) {
     createdAt: new Date(),
   });
 }
-```# noobform
-<<<<<<< HEAD
-=======
-# noobform
->>>>>>> a5b0815 (first commit)
-# noobform
+```
