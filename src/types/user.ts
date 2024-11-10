@@ -2,16 +2,19 @@ import { Document } from 'mongoose';
 
 export interface IUser extends Document {
   _id: string;
-  email: string;
-  password?: string;
   name: string;
-  avatar?: string;
-  role: 'user' | 'admin';
-  premium: boolean;
-  emailVerified?: Date;
-  lastLogin?: Date;
-  createdAt: Date;
-  updatedAt: Date;
+  email: string;
+  role: string;
+  banned: boolean;
+  createdAt: string; // ISO date string
+  subscriptionPlan: string;
+  customerId: string;
+  subscriptionId: string;
+  billingInterval: string;
+  status: string;
+  billingStart: string; // ISO date string
+  billingEnd: string; // ISO date string
+  planCanceled: boolean;
 }
 
 export interface UserAdminPanelProps {

@@ -43,7 +43,7 @@ const config = {
   },
   admin: {
     page: {
-      usersPerPage: 10,
+      usersPerPage: 100,
     }
   }
 };

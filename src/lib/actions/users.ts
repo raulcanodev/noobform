@@ -23,8 +23,20 @@ export async function getUsers(page: number, pageSize: number, searchTerm: strin
     .lean()
 
   return users.map(user => ({
+    _id: user._id ? user._id.toString() : 'N/A',
     name: user.name || 'N/A',
     email: user.email || 'N/A',
+    role: user.role || 'N/A',
+    banned: user.banned || false,
+    createdAt: user.createdAt || 'N/A',
+    subscriptionPlan: user.subscriptionPlan || 'N/A',
+    customerId: user.customerId || 'N/A',
+    subscriptionId: user.subscriptionId || 'N/A',
+    billingInterval: user.billingInterval || 'N/A',
+    status: user.status || 'N/A',
+    billingStart: user.billingStart || 'N/A',
+    billingEnd: user.billingEnd || 'N/A',
+    planCanceled: user.planCanceled || false,
   }))
 }
 
