@@ -43,12 +43,13 @@ const defaultColumns = {
   billingEnd: { title: 'Billing End', default: false, type: 'date' as const },
   planCanceled: { title: 'Plan Canceled', default: false, type: 'boolean' as const },
   provider: { title: 'Provider', default: false, type: 'string' as const },
+  lastLogin: { title: 'Last Login', default: false, type: 'date' as const },
 };
 
 type ColumnId = keyof typeof defaultColumns;
 
 export function UserTable({ initialUsers, totalUsers }: UserTableProps) {
-  const [users, setUsers] = useState<IUser[]>(initialUsers);
+  const [users, setUsers] = useState(initialUsers as IUser[]);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
@@ -77,7 +78,7 @@ export function UserTable({ initialUsers, totalUsers }: UserTableProps) {
   const handleSearch = useCallback(async () => {
     setIsLoading(true);
     const results = await searchUsers(debouncedSearchTerm, currentPage, pageSize);
-    setUsers(results);
+    setUsers(results as IUser[]);
     setIsLoading(false);
   }, [debouncedSearchTerm, currentPage, pageSize]);
 
