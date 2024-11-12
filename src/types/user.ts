@@ -21,13 +21,7 @@ export interface IUser extends Document {
   lastLogin?: Date;
 }
 
-export interface UserAdminPanelProps {
-  _id?: string;
-  name: string;
-  email: string;
-}
-
 export interface UserTableProps {
-  initialUsers: UserAdminPanelProps[];
+  initialUsers: IUser[];
   totalUsers: number
 }
