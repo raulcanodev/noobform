@@ -3,12 +3,12 @@
 import { mongooseConnection } from "@/lib/db/mongoclient"
 import { revalidatePath } from "next/cache"
 import { User } from "@/models/User"
-import { IUser } from "@/types/user"
+import { IUser, IUserAdminDashboardProps } from "@/types/user"
 
 // Ensure mongoose connection is established
 mongooseConnection.then(() => console.log('Mongoose connected')).catch(err => console.error('Mongoose connection error:', err))
 
-export async function getUsers(page: number, pageSize: number, searchTerm: string = '') {
+export async function getUsers(page: number, pageSize: number, searchTerm: string = ''): Promise<IUserAdminDashboardProps[]> {
   const skip = (page - 1) * pageSize
 
   const query = searchTerm
@@ -41,7 +41,7 @@ export async function getUsers(page: number, pageSize: number, searchTerm: strin
     planCanceled: user.planCanceled || false,
     provider: user.provider || 'N/A',
     lastLogin: user.lastLogin || 'N/A',
-  }))
+  })) as IUserAdminDashboardProps[]
 }
 
 export async function searchUsers(searchTerm: string, page: number, pageSize: number) {
@@ -84,7 +84,7 @@ export async function updateUser(userId: string, updateData: Partial<IUser>) {
       userId,
       { $set: safeUpdateData },
       { new: true, runValidators: true, lean: true }
-    );
+    ) as IUser | null;
 
     if (!updatedUser) {
       throw new Error('User not found');
@@ -97,11 +97,7 @@ export async function updateUser(userId: string, updateData: Partial<IUser>) {
     // Convert complex fields for client compatibility
     return {
       ...updatedUser,
-      _id: updatedUser._id?.toString() || 'N/A',
-      createdAt: updatedUser.createdAt?.toISOString() || 'N/A',
-      updatedAt: updatedUser.updatedAt?.toISOString() || 'N/A',
-      lastLogin: updatedUser.lastLogin?.toISOString() || 'N/A',
-      // add any other date or ObjectId fields as necessary
+      _id: updatedUser._id ? updatedUser._id.toString() : '',
     };
 
   } catch (error) {

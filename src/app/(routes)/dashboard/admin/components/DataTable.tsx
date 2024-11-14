@@ -220,8 +220,8 @@ export function UserTable({ initialUsers, totalUsers }: IUserTableProps) {
               </TableCell>
             </TableRow>
           ) : (
-            users.map((user) => (
-              <TableRow key={user._id}>
+            users.map((user, index) => (
+              <TableRow key={index}>
                 {visibleColumns.map((columnId) => (
                   <TableCell key={columnId}>
                     {formatCellValue(user[columnId as keyof IUserAdminDashboardProps], defaultColumns[columnId].type)}
