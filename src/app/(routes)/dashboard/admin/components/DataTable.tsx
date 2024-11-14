@@ -21,15 +21,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui';
-import { deleteUser, searchUsers } from '@/lib/actions/users';
+import { searchUsers } from '@/lib/actions/users';
 import { useDebounce } from '@/hooks/use-debounce';
 import { UserTableProps, IUser } from '@/types/user';
 import { Combobox } from './Combobox';
-import { useRouter } from 'next/navigation';
+import { EditUser } from './EditUser';
 import { SlidersHorizontal, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const defaultColumns = {
   name: { title: 'Name', default: true, type: 'string' as const },
+  username: { title: 'Username', default: true, type: 'string' as const },
   email: { title: 'Email', default: true, type: 'string' as const },
   role: { title: 'Role', default: false, type: 'string' as const },
   banned: { title: 'Banned', default: false, type: 'boolean' as const },
@@ -54,6 +55,7 @@ export function UserTable({ initialUsers, totalUsers }: UserTableProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [totalRows, setTotalRows] = useState(10);
+  const [flag, setFlag] = useState(false);
   const [sortConfig, setSortConfig] = useState<{
     field: keyof IUser;
     direction: 'asc' | 'desc';
@@ -66,7 +68,6 @@ export function UserTable({ initialUsers, totalUsers }: UserTableProps) {
   const [isClient, setIsClient] = useState(false);
 
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
-  const router = useRouter();
 
   const pageSize = totalRows;
   const totalPages = Math.ceil(totalUsers / pageSize);
@@ -81,27 +82,6 @@ export function UserTable({ initialUsers, totalUsers }: UserTableProps) {
     setUsers(results as IUser[]);
     setIsLoading(false);
   }, [debouncedSearchTerm, currentPage, pageSize]);
-
-  const handleDelete = async (userId: string, userEmail: string) => {
-    if (window.confirm('Are you sure you want to delete this user?')) {
-      const emailConfirmation = prompt(
-        `Please type the user email '${userEmail}' to delete the user:`
-      );
-
-      if (emailConfirmation === userEmail) {
-        try {
-          await deleteUser(userId);
-          setUsers((prevUsers) => prevUsers.filter((user) => user._id !== userId));
-          router.refresh();
-        } catch (error) {
-          console.error('Error deleting user:', error);
-          alert('Failed to delete user. Please try again.');
-        }
-      } else {
-        alert('Email does not match. Deletion canceled.');
-      }
-    }
-  };
 
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
@@ -153,11 +133,15 @@ export function UserTable({ initialUsers, totalUsers }: UserTableProps) {
     );
   };
 
+  const handleUpdate = useCallback(() => {
+    setFlag((prev) => !prev);
+  }, []);
+
   useEffect(() => {
     if (isClient) {
       handleSearch();
     }
-  }, [handleSearch, isClient]);
+  }, [handleSearch, isClient, flag]);
 
   const formatCellValue = (
     value: IUser[keyof IUser],
@@ -225,7 +209,7 @@ export function UserTable({ initialUsers, totalUsers }: UserTableProps) {
                 />
               </TableHead>
             ))}
-            <TableHead>Actions</TableHead>
+            <TableHead>Edit User</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -244,9 +228,16 @@ export function UserTable({ initialUsers, totalUsers }: UserTableProps) {
                   </TableCell>
                 ))}
                 <TableCell>
-                  <Button variant="outline" onClick={() => handleDelete(user._id, user.email)}>
-                    Delete
-                  </Button>
+                  <EditUser
+                    onUserUpdate={handleUpdate}
+                    userId={user._id}
+                    name={user.name}
+                    username={user.username}
+                    userEmail={user.email}
+                    role={user.role}
+                    subscriptionPlan={user.subscriptionPlan}
+                    banned={user.banned}
+                  />
                 </TableCell>
               </TableRow>
             ))
@@ -256,14 +247,14 @@ export function UserTable({ initialUsers, totalUsers }: UserTableProps) {
       <div className="flex justify-between items-center mt-4">
         <Select onValueChange={(value) => setTotalRows(Number(value))}>
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Rows per page" />
+            <SelectValue placeholder="10 Rows" />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectItem value='10'>10 Rows</SelectItem>
-              <SelectItem value='25'>25 Rows</SelectItem>
-              <SelectItem value='50'>50 Rows</SelectItem>
-              <SelectItem value='100'>100 Rows</SelectItem>
+              <SelectItem value="10">10 Rows</SelectItem>
+              <SelectItem value="25">25 Rows</SelectItem>
+              <SelectItem value="50">50 Rows</SelectItem>
+              <SelectItem value="100">100 Rows</SelectItem>
             </SelectGroup>
           </SelectContent>
         </Select>

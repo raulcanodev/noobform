@@ -26,6 +26,7 @@ export async function getUsers(page: number, pageSize: number, searchTerm: strin
   return users.map(user => ({
     _id: user._id ? user._id.toString() : 'N/A',
     name: user.name || 'N/A',
+    username: user.username || 'N/A',
     email: user.email || 'N/A',
     role: user.role || 'N/A',
     banned: user.banned || false,
@@ -69,21 +70,52 @@ export async function deleteUser(userId: string) {
   return { success: true }
 }
 
-export async function updateUser(userId: string, updateData: Partial<IUser>): Promise<IUser | null> {
+export async function updateUser(userId: string, updateData: Partial<IUser>) {
   try {
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      { $set: updateData },
-      { new: true, runValidators: true }
-    )
-
-    if (updatedUser) {
-      revalidatePath('/profile')
+    if (!userId || typeof userId !== 'string') {
+      throw new Error('Invalid user ID');
     }
 
-    return updatedUser
+    const safeUpdateData = { ...updateData };
+    delete safeUpdateData._id;
+    delete safeUpdateData.createdAt;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $set: safeUpdateData },
+      { new: true, runValidators: true, lean: true }
+    );
+
+    if (!updatedUser) {
+      throw new Error('User not found');
+    }
+
+    revalidatePath('/dashboard/admin');
+
+    return updatedUser;
+
   } catch (error) {
-    console.error('Error updating user:', error)
+    console.error('Error updating user:', error);
+    throw error;
+  }
+}
+
+export async function getUser(userId: string) {
+  if (!userId || typeof userId !== 'string') {
+    throw new Error('Invalid user ID')
+  }
+
+  try {
+    const user = await User.findById(userId).lean()
+
+    if (!user) {
+      throw new Error('User not found')
+    }
+
+    return user;
+
+  } catch (error) {
+    console.error('Error fetching user:', error)
     throw error
   }
 }
