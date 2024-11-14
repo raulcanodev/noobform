@@ -11,13 +11,13 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import config from "@/config"
 
 const menuItems = [
-  { name: "Demo 1", icon: FileText, href: "/dashboard/demo1" },
+  { name: "Demo", icon: FileText, href: "/dashboard/demo" },
   { name: "Admin", icon: FileText, href: "/dashboard/admin" },
 ]
 
 const settingsItems = [
   { name: "Profile", href: "/dashboard/settings/profile" },
-  { name: "General", href: "/dashboard/settings/general" },
+  // { name: "General", href: "/dashboard/settings/general" },
 ]
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {

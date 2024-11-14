@@ -23,7 +23,7 @@ import {
 } from '@/components/ui';
 import { searchUsers } from '@/lib/actions/users';
 import { useDebounce } from '@/hooks/use-debounce';
-import { UserTableProps, IUser } from '@/types/user';
+import { IUserTableProps, IUserAdminDashboardProps } from '@/types/user';
 import { Combobox } from './Combobox';
 import { EditUser } from './EditUser';
 import { SlidersHorizontal, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -49,15 +49,15 @@ const defaultColumns = {
 
 type ColumnId = keyof typeof defaultColumns;
 
-export function UserTable({ initialUsers, totalUsers }: UserTableProps) {
-  const [users, setUsers] = useState(initialUsers as IUser[]);
+export function UserTable({ initialUsers, totalUsers }: IUserTableProps) {
+  const [users, setUsers] = useState(initialUsers as IUserAdminDashboardProps[]);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [totalRows, setTotalRows] = useState(10);
   const [flag, setFlag] = useState(false);
   const [sortConfig, setSortConfig] = useState<{
-    field: keyof IUser;
+    field: keyof IUserAdminDashboardProps;
     direction: 'asc' | 'desc';
   } | null>(null);
   const [visibleColumns, setVisibleColumns] = useState<ColumnId[]>(
@@ -79,7 +79,7 @@ export function UserTable({ initialUsers, totalUsers }: UserTableProps) {
   const handleSearch = useCallback(async () => {
     setIsLoading(true);
     const results = await searchUsers(debouncedSearchTerm, currentPage, pageSize);
-    setUsers(results as IUser[]);
+    setUsers(results as IUserAdminDashboardProps[]);
     setIsLoading(false);
   }, [debouncedSearchTerm, currentPage, pageSize]);
 
@@ -88,7 +88,7 @@ export function UserTable({ initialUsers, totalUsers }: UserTableProps) {
     handleSearch();
   };
 
-  const onSort = (field: keyof IUser, direction: 'asc' | 'desc') => {
+  const onSort = (field: keyof IUserAdminDashboardProps, direction: 'asc' | 'desc') => {
     setSortConfig({ field, direction });
     const sortedUsers = [...users].sort((a, b) => {
       const aValue = a[field];
@@ -144,7 +144,7 @@ export function UserTable({ initialUsers, totalUsers }: UserTableProps) {
   }, [handleSearch, isClient, flag]);
 
   const formatCellValue = (
-    value: IUser[keyof IUser],
+    value: IUserAdminDashboardProps[keyof IUserAdminDashboardProps],
     type: (typeof defaultColumns)[ColumnId]['type']
   ): string => {
     if (value === null || value === undefined) return 'N/A';
@@ -224,7 +224,7 @@ export function UserTable({ initialUsers, totalUsers }: UserTableProps) {
               <TableRow key={user._id}>
                 {visibleColumns.map((columnId) => (
                   <TableCell key={columnId}>
-                    {formatCellValue(user[columnId as keyof IUser], defaultColumns[columnId].type)}
+                    {formatCellValue(user[columnId as keyof IUserAdminDashboardProps], defaultColumns[columnId].type)}
                   </TableCell>
                 ))}
                 <TableCell>

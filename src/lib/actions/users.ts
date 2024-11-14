@@ -90,15 +90,26 @@ export async function updateUser(userId: string, updateData: Partial<IUser>) {
       throw new Error('User not found');
     }
 
+    // Revalidate paths
     revalidatePath('/dashboard/admin');
+    revalidatePath('/dashboard/demo');
 
-    return updatedUser;
+    // Convert complex fields for client compatibility
+    return {
+      ...updatedUser,
+      _id: updatedUser._id?.toString() || 'N/A',
+      createdAt: updatedUser.createdAt?.toISOString() || 'N/A',
+      updatedAt: updatedUser.updatedAt?.toISOString() || 'N/A',
+      lastLogin: updatedUser.lastLogin?.toISOString() || 'N/A',
+      // add any other date or ObjectId fields as necessary
+    };
 
   } catch (error) {
     console.error('Error updating user:', error);
     throw error;
   }
 }
+
 
 export async function getUser(userId: string) {
   if (!userId || typeof userId !== 'string') {

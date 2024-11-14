@@ -9,14 +9,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
-import { IUser } from "@/types/user"
+import { IUserAdminDashboardProps } from "@/types/user"
 
 interface ColumnHeaderProps {
   title: string
-  field: keyof IUser
+  field: keyof IUserAdminDashboardProps
   sortDirection: 'asc' | 'desc' | null
-  onSort: (field: keyof IUser, direction: 'asc' | 'desc') => void
-  onHide: (field: keyof IUser) => void
+  onSort: (field: keyof IUserAdminDashboardProps, direction: 'asc' | 'desc') => void
+  onHide: (field: keyof IUserAdminDashboardProps) => void
   className?: string
 }
 

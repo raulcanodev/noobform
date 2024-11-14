@@ -22,7 +22,30 @@ export interface IUser extends Document {
   lastLogin?: Date;
 }
 
-export interface UserTableProps {
-  initialUsers: IUser[];
+// Types needed for the Admin Dashboard, this avoids type errors if the User model interface changes
+// For example, we don't need the avatar and bio fields in the Admin Dashboard
+export interface IUserAdminDashboardProps {
+  _id: string;
+  name: string;
+  username: string;
+  email: string;
+  role: string;
+  banned: boolean;
+  createdAt: Date;
+  subscriptionPlan: string;
+  customerId?: string;
+  subscriptionId?: string;
+  billingInterval?: string;
+  status?: string;
+  billingStart?: Date;
+  billingEnd?: Date;
+  planCanceled: boolean;
+  provider: string;
+  lastLogin?: Date;
+}
+
+export interface IUserTableProps {
+  initialUsers: IUserAdminDashboardProps[];
   totalUsers: number
 }
+
