@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState } from 'react';
 import {
@@ -34,7 +34,16 @@ interface IEditUserProps {
   onUserUpdate: () => void;
 }
 
-export function EditUser({ userId, userEmail, role, subscriptionPlan, banned, username, name, onUserUpdate }: IEditUserProps) {
+export function EditUser({
+  userId,
+  userEmail,
+  role,
+  subscriptionPlan,
+  banned,
+  username,
+  name,
+  onUserUpdate,
+}: IEditUserProps) {
   const [userName, setUserName] = useState(name);
   const [userUsername, setUserUsername] = useState(username);
   const [userRole, setUserRole] = useState(role);
@@ -44,49 +53,53 @@ export function EditUser({ userId, userEmail, role, subscriptionPlan, banned, us
   const router = useRouter();
 
   const handleUpdateUser = async () => {
-    try {
-      if (window.confirm(`Are you sure you want to update ${userEmail}?`)) {
-      const updatedUser = await updateUser(userId, { 
-        name: userName, 
-        username: userUsername, 
-        role: userRole, 
-        subscriptionPlan: userSubscriptionPlan,
-        banned: isBanned
-      });
-      if (updatedUser) {
-        toast.success('User updated successfully');
-        router.refresh();
-        setIsOpen(false);
-        onUserUpdate();
-      };
-      } else {
+    if (typeof window !== 'undefined') {
+      try {
+        if (window.confirm(`Are you sure you want to update ${userEmail}?`)) {
+          const updatedUser = await updateUser(userId, {
+            name: userName,
+            username: userUsername,
+            role: userRole,
+            subscriptionPlan: userSubscriptionPlan,
+            banned: isBanned,
+          });
+          if (updatedUser) {
+            toast.success('User updated successfully');
+            router.refresh();
+            setIsOpen(false);
+            onUserUpdate();
+          }
+        } else {
+          toast.error('Failed to update user');
+        }
+      } catch (error) {
+        console.error(error);
         toast.error('Failed to update user');
       }
-    } catch (error) {
-      console.error(error);
-      toast.error('Failed to update user');
     }
   };
 
   const handleDelete = async (userId: string, userEmail: string) => {
-    if (window.confirm('Are you sure you want to delete this user?')) {
-      const emailConfirmation = prompt(
-        `Please type the user email '${userEmail}' to delete the user:`
-      );
+    if (typeof window !== 'undefined') {
+      if (window.confirm('Are you sure you want to delete this user?')) {
+        const emailConfirmation = prompt(
+          `Please type the user email '${userEmail}' to delete the user:`
+        );
 
-      if (emailConfirmation === userEmail) {
-        try {
-          await deleteUser(userId);
-          toast.success('User deleted successfully');
-          router.refresh();
-          setIsOpen(false);
-          onUserUpdate();
-        } catch (error) {
-          console.error('Error deleting user:', error);
-          toast.error('Failed to delete user. Please try again.');
+        if (emailConfirmation === userEmail) {
+          try {
+            await deleteUser(userId);
+            toast.success('User deleted successfully');
+            router.refresh();
+            setIsOpen(false);
+            onUserUpdate();
+          } catch (error) {
+            console.error('Error deleting user:', error);
+            toast.error('Failed to delete user. Please try again.');
+          }
+        } else {
+          toast.error('Email does not match. Deletion canceled.');
         }
-      } else {
-        toast.error('Email does not match. Deletion canceled.');
       }
     }
   };
@@ -101,17 +114,16 @@ export function EditUser({ userId, userEmail, role, subscriptionPlan, banned, us
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Edit User</DialogTitle>
-          <DialogDescription className='text'>
+          <DialogDescription className="text">
             Be careful when editing user data. Changes may affect user access and billing.
           </DialogDescription>
           <hr></hr>
           <DialogDescription>
-            Name: <span className='text-primary'>{name}</span>
+            Name: <span className="text-primary">{name}</span>
           </DialogDescription>
           <DialogDescription>
-            Email: <span className='text-primary'>{userEmail}</span>
+            Email: <span className="text-primary">{userEmail}</span>
           </DialogDescription>
-      
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
@@ -140,12 +152,7 @@ export function EditUser({ userId, userEmail, role, subscriptionPlan, banned, us
             <Label htmlFor="email" className="text-right">
               Email
             </Label>
-            <Input
-              disabled
-              id="email"
-              value={userEmail}
-              className="col-span-3"
-            />
+            <Input disabled id="email" value={userEmail} className="col-span-3" />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="role" className="text-right">
@@ -180,7 +187,10 @@ export function EditUser({ userId, userEmail, role, subscriptionPlan, banned, us
             <Label htmlFor="banned" className="text-right">
               Banned
             </Label>
-            <Select value={isBanned.toString()} onValueChange={(value) => setIsBanned(value === 'true')}>
+            <Select
+              value={isBanned.toString()}
+              onValueChange={(value) => setIsBanned(value === 'true')}
+            >
               <SelectTrigger className="col-span-3">
                 <SelectValue placeholder="Banned status" />
               </SelectTrigger>
@@ -192,8 +202,12 @@ export function EditUser({ userId, userEmail, role, subscriptionPlan, banned, us
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => handleDelete(userId, userEmail)}>Delete user</Button>
-          <Button variant="default" type="submit" onClick={handleUpdateUser}>Save changes</Button>
+          <Button variant="outline" onClick={() => handleDelete(userId, userEmail)}>
+            Delete user
+          </Button>
+          <Button variant="default" type="submit" onClick={handleUpdateUser}>
+            Save changes
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

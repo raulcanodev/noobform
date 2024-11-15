@@ -215,7 +215,7 @@ export function UserTable({ initialUsers, totalUsers }: IUserTableProps) {
         <TableBody>
           {isLoading ? (
             <TableRow>
-              <TableCell colSpan={visibleColumns.length + 1} className="text-center">
+              <TableCell colSpan={visibleColumns.length + 1} className="text-center animate-pulse">
                 Loading...
               </TableCell>
             </TableRow>

@@ -17,6 +17,12 @@ const UserSchema = new Schema<IUser>(
       trim: true,
       maxlength: [50, 'Name cannot be more than 50 characters'],
     },
+    username: {
+      type: String,
+      unique: true,
+      trim: true,
+      maxlength: [20, 'Username cannot be more than 20 characters'],
+    },
     avatar: {
       type: String,
       default: 'default-avatar.png',
