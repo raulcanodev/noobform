@@ -1,5 +1,6 @@
 import GoogleProvider from 'next-auth/providers/google';
 import GitHubProvider from 'next-auth/providers/github';
+import LinkedIn from "next-auth/providers/linkedin"
 import EmailProvider from 'next-auth/providers/email';
 import type { NextAuthOptions, User as NextAuthUser } from 'next-auth';
 import { MongoDBAdapter } from '@auth/mongodb-adapter';
@@ -41,6 +42,11 @@ export const authOptions: NextAuthOptions = {
     GitHubProvider({
       clientId: process.env.GITHUB_CLIENT_ID!,
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+      allowDangerousEmailAccountLinking: true,
+    }),
+    LinkedIn({
+      clientId: process.env.LINKEDIN_CLIENT_ID!,
+      clientSecret: process.env.LINKEDIN_CLIENT_SECRET!,
       allowDangerousEmailAccountLinking: true,
     }),
     EmailProvider({
