@@ -22,6 +22,12 @@ const skilletRegular = localFont({
   weight: '400',
 });
 
+const skilletCondensed = localFont({
+  src: './fonts/Skillet-Condensed.woff',
+  variable: '--font-skillet_condensed',
+  weight: '400',
+});
+
 const bricolageFont = Bricolage_Grotesque({
   subsets: ['latin'],
   weight: '800',
@@ -34,7 +40,7 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const fonts = [geistSans.variable, geistMono.variable, bricolageFont.variable, skilletRegular.variable];
+  const fonts = [geistSans.variable, geistMono.variable, bricolageFont.variable, skilletRegular.variable, skilletCondensed.variable];
 
   return (
     <html lang="en" suppressHydrationWarning>
