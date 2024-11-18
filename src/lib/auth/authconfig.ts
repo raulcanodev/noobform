@@ -1,6 +1,6 @@
 import GoogleProvider from 'next-auth/providers/google';
 import GitHubProvider from 'next-auth/providers/github';
-import LinkedIn from "next-auth/providers/linkedin"
+import LinkedIn from 'next-auth/providers/linkedin';
 import EmailProvider from 'next-auth/providers/email';
 import type { NextAuthOptions, User as NextAuthUser } from 'next-auth';
 import { MongoDBAdapter } from '@auth/mongodb-adapter';
@@ -87,7 +87,7 @@ export const authOptions: NextAuthOptions = {
         }
 
         // Update last login for all sign-in methods
-        await User.findByIdAndUpdate(dbUser._id, { 
+        await User.findByIdAndUpdate(dbUser._id, {
           lastLogin: new Date(),
           // Update name and avatar if provided and different from stored values
           ...(user.name && user.name !== dbUser.name && { name: user.name }),
@@ -103,22 +103,26 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.subscriptionPlan = (user as NextAuthUser & { subscriptionPlan: string }).subscriptionPlan;
+        token.name = user.name;
+        token.email = user.email;
+        token.picture = user.image;
+        token.subscriptionPlan = user.subscriptionPlan;
       }
       return token;
     },
     async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id;
-        session.user.subscriptionPlan = token.subscriptionPlan;
-        // Fetch the latest user data from the database
-        const dbUser = await User.findById(token.id);
-        if (dbUser) {
-          session.user.name = dbUser.name;
-          session.user.image = dbUser.avatar;
-          session.user.subscriptionPlan = dbUser.subscriptionPlan;
+      try {
+        if (session.user) {
+          session.user.id = token.id as string;
+          session.user.email = token.email as string;
+          session.user.name = token.name as string;
+          session.user.image = token.picture as string;
+          session.user.subscriptionPlan = token.subscriptionPlan as string;
         }
+      } catch (error) {
+        console.error('Error in session callback:', error);
       }
+
       return session;
     },
     async redirect({ url, baseUrl }) {
@@ -126,5 +130,5 @@ export const authOptions: NextAuthOptions = {
     },
   },
 
-  debug: process.env.NODE_ENV === 'development',
+  debug: process.env.NODE_ENV !== 'production',
 };

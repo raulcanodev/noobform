@@ -4,6 +4,7 @@ import { mongooseConnection } from "@/lib/db/mongoclient"
 import { revalidatePath } from "next/cache"
 import { User } from "@/models/User"
 import { IUser, IUserAdminDashboardProps } from "@/types/user"
+import { getServerSession } from "next-auth"
 
 // Ensure mongoose connection is established
 mongooseConnection.then(() => console.log('Mongoose connected')).catch(err => console.error('Mongoose connection error:', err))
@@ -107,22 +108,14 @@ export async function updateUser(userId: string, updateData: Partial<IUser>) {
 }
 
 
-export async function getUser(userId: string) {
-  if (!userId || typeof userId !== 'string') {
-    throw new Error('Invalid user ID')
-  }
+export async function getUserDetails() {
+  const session = await getServerSession()
+  
+  console.log('session in user action: ', session?.user?.id)
 
-  try {
-    const user = await User.findById(userId).lean()
+  if(!session?.user?.id === null) return null
 
-    if (!user) {
-      throw new Error('User not found')
-    }
 
-    return user;
-
-  } catch (error) {
-    console.error('Error fetching user:', error)
-    throw error
-  }
+  const user = await User.findById(session?.user?.id).lean()
+  return user
 }

@@ -5,7 +5,7 @@ export interface IUser extends Document {
   username: string;
   email: string;
   avatar: string;
-  bio: string;
+  bio?: string;
   role: string;
   banned: boolean;
   createdAt: Date;
@@ -19,6 +19,13 @@ export interface IUser extends Document {
   planCanceled: boolean;
   provider: string;
   lastLogin?: Date;
+  notificationPreferences: {
+    email: {
+      newsletter: boolean;
+      newFeatures: boolean;
+      promotions: boolean;
+    }
+  };
 }
 
 // Types needed for the Admin Dashboard, this avoids type errors if the User model interface changes

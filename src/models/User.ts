@@ -62,7 +62,23 @@ const UserSchema = new Schema<IUser>(
       type: String,
       trim: true,
       maxlength: [250, 'Description cannot be more than 500 characters'],
-    }
+    },
+    notificationPreferences: {
+      email: {
+        newsletter: {
+          type: Boolean,
+          default: true,
+        },
+        newFeatures: {
+          type: Boolean,
+          default: true,
+        },
+        promotions: {
+          type: Boolean,
+          default: true,
+        }
+      },
+    },
   },
   { timestamps: true }
 );
